@@ -14,16 +14,17 @@ import secrets
 # 5. Prepend the OTP ID (the first group) to the beginning of the ciphertext
 #
 class OTP:
-    def __init__(self, length=250, group_size=5, otp=None):
+    def __init__(self, length=225, group_size=5, otp=None):
         self.length = length
         self.group_size = group_size
+        self.width = group_size * 15
         self.numbers = []
         self.pad = ''
         self.new = True
 
         # force length to a multiple of the group size
-        if self.length % (self.group_size * 10) != 0:
-            self.length += (self.group_size * 10) - (self.length % (self.group_size * 10))
+        if self.length % self.width != 0:
+            self.length += self.width - (self.length % self.width)
 
         # load otp if provided, otherwise generate otp
         if otp is not None:
@@ -98,7 +99,7 @@ class OTP:
     def __build_pad(self):
         for i in range(len(self.numbers)):
             # create text lines by inserting line breaks
-            if i != 0 and i % (self.group_size*10) == 0 and i != len(self.numbers)-1:
+            if i != 0 and i % self.width == 0 and i != len(self.numbers)-1:
                 self.pad += '\n'
             # create groups by inserting spaces
             elif i != 0 and i % self.group_size == 0 and i != len(self.numbers)-1:
@@ -120,7 +121,7 @@ class OTP:
 #   print(otp, end='\n\n')
 #
 class OTPFactory:
-    def __init__(self, count, length=250, group_size=5):
+    def __init__(self, count, length=225, group_size=5):
         self.count = count
         self.otps = []
         self.iterator = None
