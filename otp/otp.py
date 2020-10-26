@@ -85,10 +85,10 @@ class OTP:
         numbers = otp
         numbers = numbers.replace(' ', '')
         numbers = numbers.replace('\n', '')
-        print(numbers)
         # convert string to list of single digit numbers
         numbers = [int(x) for x in numbers]
         self.numbers = numbers
+        self.length = len(self.numbers)
 
     def __get_random_numbers(self):
         for i in range(self.length):
