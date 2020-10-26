@@ -81,13 +81,18 @@ class OTP:
 
     def __load_pad(self, otp):
         self.pad = otp
-        # remove formatting characters
-        numbers = otp
-        numbers = numbers.replace(' ', '')
-        numbers = numbers.replace('\n', '')
+        self.numbers = otp
+        # determine group size
+        self.group_size = self.numbers.find(' ')
+        # remove space characters
+        self.numbers = self.numbers.replace(' ', '')
+        # determine line width
+        self.width = self.numbers.find('\n')
+        # remove line break characters
+        self.numbers = self.numbers.replace('\n', '')
         # convert string to list of single digit numbers
-        numbers = [int(x) for x in numbers]
-        self.numbers = numbers
+        self.numbers = [int(x) for x in self.numbers]
+        # determine total length
         self.length = len(self.numbers)
 
     def __get_random_numbers(self):
