@@ -1,6 +1,18 @@
 import secrets
 
+# Module for generating and using one-time-pads (otp)
 
+# Object to genereate an otp of specified length, or load a given otp.
+# Random numbers are generated using the cryptographically secure secrets
+# module. Functions to encrypt and decrypt text are available. Encryption
+# is as follows (decryption is the reverse/opposite process):
+#  
+# 1. Convert text to all uppercase characters (keeps ordinal values to 2 digits)
+# 2. Convert each character to its UTF-8 ordinal value
+# 3. Subtract 10 from the ordinal value (ensures ciphertext is always 2 digits)
+# 4. Subtract OTP values from 'ordinal' values (skipping the first group, the ID)
+# 5. Prepend the OTP ID (the first group) to the beginning of the ciphertext
+#
 class OTP:
     def __init__(self, length=250, group_size=5, otp=None):
         self.length = length
@@ -41,8 +53,8 @@ class OTP:
         for i in range(len(code)):
             ciphertext.append(code[i] - self.numbers[i + len(self.id)])
         ciphertext = [str(c) for c in ciphertext]
-        # add the otp id to the beginning of the ciphertext (used for
-        # decryption with printed otp's)
+        # prepend the otp id to the beginning of the ciphertext (used
+        # for decryption with printed otp's)
         ciphertext =  self.id + ''.join(ciphertext)
         self.new = False
         return ciphertext
@@ -97,6 +109,51 @@ class OTP:
         return self.pad
 
 
+# Generate the specified quantity of otps.
+# Generated otps are available as a text block (using built-in functions
+# repr, str, print), a list (OTPFactory.otps attribute), or as a generator
+# object (using a for statement).
+#
+# example:
+#
+# for otp in otp.OTPFactory(5):
+#   print(otp, end='\n\n')
+#
+class OTPFactory:
+    def __init__(self, count, length=250, group_size=5):
+        self.count = count
+        self.otps = []
+        self.iterator = None
+
+        # generate otps
+        for i in range(self.count):
+            self.otps.append(OTP(length, group_size))
+
+    def __iter__(self):
+        # create an iterator object from the list of otps
+        self.iterator = iter(self.otps)
+        return self.iterator
+
+    def __next__(self):
+        # if an iterator object has been created, return the next item
+        if not self.iterator is None:
+            return next(self.iterator)
+
+    # construct a readable text block of the otps
+    def __repr__(self):
+        text = ''
+        for i in range(len(self.otps)):
+            # do not add line breaks after the last otp
+            if i == (len(self.otps) - 1):
+                text += str(self.otps[i])
+            else:
+                text += str(self.otps[i]) + '\n\n'
+
+        return text
+
+
+# exception used by OTP object
+# raised when an OTP object is used to encrypt more than once
 class MultipleUseException (Exception):
     def __init__(self, value):
         self.value = value
