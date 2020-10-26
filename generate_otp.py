@@ -53,7 +53,7 @@ elif output_format == 'html':
 
     for otp in otps:
         otp = str(otp).replace('\n', '<br>')
-        html += '<p>\n' + otp + '\n</p>\n'
+        html += '<div>\n' + otp + '\n</div>\n<br>\n'
 
     html += '</body>\n'
     html += '</html>'
